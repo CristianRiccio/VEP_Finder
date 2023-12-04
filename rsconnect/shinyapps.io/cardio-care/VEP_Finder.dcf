@@ -1,0 +1,10 @@
+name: VEP_Finder
+title:
+username: cardio-care
+account: cardio-care
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 10543547
+bundleId: 8004421
+url: https://cardio-care.shinyapps.io/VEP_Finder/
+version: 1
