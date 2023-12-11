@@ -18,7 +18,7 @@ source("functions/custom_functions.R")
 # load data into global environment --------------------------------------------
 data <- read_excel('data/Supplementary_Table_3_list_of_included_publications.xlsx', skip = 1)
 
-version_vep_finder <- '1.0.5'
+version_vep_finder <- '1.0.6'
 
 top_variation_types <- get_data_chart_topVariantTypes(data)
 included_publications_not_1_1 <- get_data_chart_vepPlot(data)

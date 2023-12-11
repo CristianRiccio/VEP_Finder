@@ -175,7 +175,11 @@ fluidPage(
     tabPanel('Release Notes',
              h2('Release Notes'),
              p('VEP Finder is being kept up to date thanks to our regular reading of the literature on VEPs and our work in the field of genomics. Updates will be carried out on a need basis. We also welcome updates from users of VEPs. Send us an email at ', tags$a(href = 'mailto:info@cardio-care.ch', 'info@cardio-care.ch'), ' containing the entry to be updated along with links to the evidence supporting the update.'),
-             h4('Version 1.0.5 - 4th November 2023'),
+             h4('Version 1.0.6 - 11th December 2023'),
+             tags$ul(
+               tags$li('Added another VEP: SnpEff'),
+             ),
+             h4('Version 1.0.5 - 4th December 2023'),
              tags$ul(
                tags$li('Added option to select tools based on the number of VEPs that maximize coverage.'),
              ),
