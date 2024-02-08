@@ -135,6 +135,10 @@ function(input, output, session) {
   data$Source <- sprintf('<a href="https://pubmed.ncbi.nlm.nih.gov/%s/" target="_blank">%s</a>', data$PMID, data$Source)
   data$`Number of variant types` <- str_count(string = data$`Variant types`, pattern = ";") + 1
   data$`Number of functional impacts` <- str_count(string = data$`Functional impacts`, pattern = ";") + 1
+  data$Website <- ifelse(!is.na(data$Website), 
+                         sprintf('<a href="%s" target="_blank">%s</a>', data$Website, data$Website),
+                         'Online version not available.')
+  
 
   unique_var_types <- unique(unlist(strsplit(as.character(data$`Variant types`), ';')))
   unique_conseq <- unique(unlist(strsplit(as.character(data$`Functional impacts`), ';')))
@@ -146,8 +150,16 @@ function(input, output, session) {
         selectInput('var_type', 'Choose Variant Type:', choices = c('ALL', unique_var_types), multiple = T),
         selectInput('conseq', 'Choose Functional Impact:', choices = c('ALL', unique_conseq), multiple = T)
       )
-    } else {
+    } else if (input$filter_type == 'Maximize coverage') {
       sliderInput(inputId = 'number_of_tools', label = "Select Number of tools", min = 1, max = nrow(data), value = 1, step = 1)
+    } else if(input$filter_type == 'Operating System') {
+      tagList(
+        selectInput('operating_system', 'Choose Operating System:', choices = c('GNU/Linux', 'macOS', 'Windows'), multiple = TRUE),
+      )
+    } else if(input$filter_type == 'Website') {
+      tagList(
+        selectInput('website', 'Website', choices = c('With website', 'Without website'), multiple = FALSE),
+      )
     }
   })
 
@@ -167,14 +179,54 @@ function(input, output, session) {
         filtered_data <- filtered_data %>%
           filter(stringr::str_detect(`Functional impacts`, pattern = regext_pattern))
       }
-    } else {
+    } else if (input$filter_type == 'Maximize coverage') {
       tool_names <- get_tool_names_for_max_coverage(number_of_tools = input$number_of_tools, data = filtered_data)
       filtered_data <- filtered_data %>%
         filter(`Tool name` %in% tool_names) %>%
         mutate(`Tool name` = factor(`Tool name`, levels = tool_names, ordered = TRUE)) %>%
         arrange(`Tool name`)
+    } else if (input$filter_type == 'Operating System' && !is.null(input$operating_system)) {
+      # # Assuming 'macOS', 'Windows', and 'GNU/Linux' are columns in 'data' with TRUE/FALSE values
+      # os_selected <- input$operating_system
+      # if('macOS' %in% os_selected) {
+      #   filtered_data <- filtered_data[filtered_data$macOS == TRUE, ]
+      # }
+      # if('Windows' %in% os_selected) {
+      #   filtered_data <- filtered_data[filtered_data$Windows == TRUE, ]
+      # }
+      # if('GNU/Linux' %in% os_selected) {
+      #   filtered_data <- filtered_data[filtered_data$`GNU/Linux` == TRUE, ]
+      # }
+      for(os in input$operating_system) {
+        if(os == 'macOS') {
+          filtered_data <- filtered_data[filtered_data$macOS == TRUE, ]
+        }
+        if(os == 'Windows') {
+          filtered_data <- filtered_data[filtered_data$Windows == TRUE, ]
+        }
+        if(os == 'GNU/Linux') {
+          filtered_data <- filtered_data[filtered_data$`GNU/Linux` == TRUE, ]
+        }
+      }
+    } # else if (input$filter_type == 'Website') {
+    #  if (input$website == 'With website') {
+    #    filtered_data[filtered_data$Website != 'Online version not available.', ]
+    #  } 
+    #  if (input$website == 'Without website') {
+    #    filtered_data[filtered_data$Website == 'Online version not available.', ]
+    #  }
+    #}
+    else if (input$filter_type == 'Website') {
+      # Ensure that 'input$website' matches the actual ID of the input in the UI
+      if (input$website == 'With website') {
+        filtered_data <- filtered_data %>% 
+          filter(!is.na(Website) & Website != 'Online version not available.') # Filter out NA and the specific string
+      } 
+      if (input$website == 'Without website') {
+        filtered_data <- filtered_data %>% 
+          filter(is.na(Website) | Website == 'Online version not available.') # Include NA and the specific string
+      }
     }
-
     filtered_data <- dplyr::relocate(filtered_data, c('Number of variant types', 'Number of functional impacts'), .before = 'Functional impacts')
   })
 
@@ -252,5 +304,37 @@ function(input, output, session) {
       write.csv(filtered_data, file, row.names = FALSE)
     }
   )
+    reviews <- data.table::fread('data/search_results_rev.csv')
+    reviews[, c('Authors', 'Citation', 'Create Date', 'PMCID', 'NIHMS ID') := NULL]
+    reviews[, Title := sprintf('<a href="https://pubmed.ncbi.nlm.nih.gov/%s/" target="_blank">%s</a>', PMID, Title)]
+    
+    output$table_reviews <- DT::renderDataTable({
+      DT::datatable(reviews, escape = FALSE)
+    })
+    benchmarks <- data.table::fread('data/search_results_ben.csv')
+    benchmarks[, c('Authors', 'Citation', 'Create Date', 'PMCID', 'NIHMS ID') := NULL]
+    benchmarks[, Title := sprintf('<a href="https://pubmed.ncbi.nlm.nih.gov/%s/" target="_blank">%s</a>', PMID, Title)]
+    
+    output$table_benchmarks <- DT::renderDataTable({
+      DT::datatable(benchmarks, escape = FALSE)
+    })
+    
+    benchmark_ghosh <- readxl::read_excel('data/13059_2017_1353_MOESM1_ESM_Table_S6.xlsx')
+    benchmark_ghosh <- data.table::as.data.table(benchmark_ghosh)
+    for (col_name in names(benchmark_ghosh)) {
+      if (is.numeric(benchmark_ghosh[[col_name]])) {
+        benchmark_ghosh[[col_name]] <- round(benchmark_ghosh[[col_name]], 4)
+      }
+    }
+    output$table_benchmark_ghosh <- DT::renderDataTable({
+      DT::datatable(benchmark_ghosh)
+    })
+    
+    benchmark_livesey <- readxl::read_excel('data/msb202211474-sup-0006-table ev5_rank.xlsx')
+    benchmark_livesey <- data.table::as.data.table(benchmark_livesey)
+    benchmark_livesey[, `rank score` := round(`rank score`, 4)]
+    output$table_benchmark_livesey <- DT::renderDataTable({
+      DT::datatable(benchmark_livesey)
+    })
 }
 
