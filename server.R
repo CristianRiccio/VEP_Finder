@@ -256,7 +256,7 @@ function(input, output, session) {
 
   # Display release date -------------------------------------------------------
   observe({
-    release_date <- Sys.Date()
+    release_date <- '29th April 2025'
     day_ordinal <- scales::ordinal(lubridate::day(release_date))
     month_name <- lubridate::month(release_date, label = TRUE, abbr = FALSE)
     year_num <- lubridate::year(release_date)
