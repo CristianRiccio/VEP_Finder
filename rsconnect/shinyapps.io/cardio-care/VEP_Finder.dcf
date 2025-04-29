@@ -5,7 +5,7 @@ account: cardio-care
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 10543547
-bundleId: 8229741
+bundleId: 8609092
 url: https://cardio-care.shinyapps.io/VEP_Finder/
 version: 1
 asMultiple: FALSE

@@ -175,6 +175,12 @@ fluidPage(
              ),
              h4('Maximize coverage.'),
              p("This option lets you input a number of tools that you would like to use. VEP Finder then displays a list of VEPs that maximize the number of predicted functional impacts."),
+             h4('Website'),
+             p('For VEPs that can be used interactively online, the column "Website" contains the URL of the website where the tool can be used.'),
+             h4('Operating system'),
+             p("The table indicates whether the tool can be installed on the three major operating systems: GNU/Linux, macOS, Windows. Some tools are clear with regard to their OS requirements, while others less so. Please, always carefully check if your tool of interest is available on your operating system."),
+             h4('"works on a personal computer"'),
+             p("This column specifies whether the VEP can be used on a personal computer, as opposed to a high-performance computer (HPC). This column serves users with no access to an HPC to exclude VEPs that require one, such as SparkINFERNO."),
     ),
     tabPanel('Explore VEPs',
              h2('Explore VEPs'),
@@ -222,6 +228,22 @@ fluidPage(
     tabPanel('Release Notes',
              h2('Release Notes'),
              p('VEP Finder is being kept up to date thanks to our regular reading of the literature on VEPs and our work in the field of genomics. Updates will be carried out on a need basis. We also welcome updates from users of VEPs. Send us an email at ', tags$a(href = 'mailto:info@cardio-care.ch', 'info@cardio-care.ch'), ' containing the entry to be updated along with links to the evidence supporting the update.'),
+             h4('Version 1.0.15 - 13th May 2024'),
+             tags$ul(
+               tags$li('VEP Finder has been published in the journal "Human Genetics". We therefore updated the "Citation" tab.'),
+             ),
+             h4('Version 1.0.14 - 16th February 2024'),
+             tags$ul(
+               tags$li('Added documentation on how to interpret the columns on website, operating system and computational requirements.'),
+             ),
+             h4('Version 1.0.13 - 14th February 2024'),
+             tags$ul(
+               tags$li('For the tool RSAT, the column "Website" showed "FALSE". To make it consistent with other tools, "FALSE" was changed to "Online version not available.'),
+             ),
+             h4('Version 1.0.12 - 14th February 2024'),
+             tags$ul(
+               tags$li('The name of the tool "MoBiDic" was corrected to "MoBiDic Prioritization Algorithm (MPA)". Read the abstract of the associated publication for the evidence supporting this correction.'),
+             ),
              h4('Version 1.0.11 - 7th February 2024'),
              tags$ul(
                tags$li('Users can now filter VEPs by supported operating system and the availability of an online version of the tool.'),
@@ -286,9 +308,9 @@ fluidPage(
     ),
     tabPanel('Citation',
              h2('Citation'),
-             p('When using VEP Finder in your work, please use the following citation and include the copyright notice stated in the MIT license somewhere in your product or its documentation.'),
-             h3('Citation:'),
-             p('Riccio Cristian, Jansen Max, Linlin Guo, Ziegler Andreas. Variant effect predictors: a systematic review and practical guide. (in peer review)')
+             p('When using VEP Finder in your work, please use the following citation:'),
+             p('Riccio C, Jansen ML, Guo L, Ziegler A. Variant effect predictors: a systematic review and practical guide. Hum Genet. Published online April 4, 2024. doi:10.1007/s00439-024-02670-5'),
+             p(tags$a(href = 'https://pubmed.ncbi.nlm.nih.gov/38573379/', 'Link to PubMed entry'))
     ),
     shiny::tabPanel('Reviews',
              p('Reviews offer additional guidance to select appropriate tools.'),
